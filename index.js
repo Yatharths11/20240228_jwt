@@ -23,7 +23,7 @@ app.use(express.json())
 app.use(express.urlencoded( { extended: true }))
 
 
-// API to register a new user
+// API to confirm if the users exists or not
 app.get( '/login', (req, res) => {
     //add  user to database and return in console
     let username= req.body.username;
@@ -33,14 +33,16 @@ app.get( '/login', (req, res) => {
         "username": username,
         "password" : password
     }
+    //check data base if password is correct
     myDB.verifyPassword(user)
         .then((data) => {
             if (data) {
                 console.log("User verified");
-                // const secret_key = process.env.ACCESS_TOKEN_SECRET
+
+                //when user is authenticated create token
                 const access_token = jwt.sign({name:user.username},process.env.ACCESS_TOKEN_SECRET,{ expiresIn: '1h' })
                 res.send(`User verified! \n Your access token is ${access_token}` );
-                
+
             } else {
                 console.log("User not verified");
                 res.status(401).send("Invalid Username or Password");
@@ -52,14 +54,21 @@ app.get( '/login', (req, res) => {
         });           
 })
 
-// API to confirm if the user already exists or not
+// API to register the user
 app.post('/register',(req,res)=>{
     const username= req.body.username
     const password = req.body.password
 
-    //check data base if password is correct
-
-    //create a token and return it 
+    const user = {
+        "username": username,
+        "password" : password
+    }
+    myDB.registerUser(user)
+    .then((result) =>{
+        if(result){
+            res.send(`New User Created with Username: ${user.username} created successfully`) 
+        }
+    } )
 })
 
 app.get('/posts/user',(req,res)=>{

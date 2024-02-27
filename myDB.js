@@ -145,5 +145,17 @@ async function verifyPassword(user) {
     }
   }
 
+  async function registerUser(user) {
+    try {
+        await User.insertMany([user]);
+        console.log(`User ${user.username} created successfully`);
+        return true;
+    } catch (e) {
+        console.error(`Error inserting user ${user.username}: ${e}`);
+        return false;
+    }
+}
 
-module.exports = {verifyPassword}
+
+module.exports = {verifyPassword,
+                    registerUser}
