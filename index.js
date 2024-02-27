@@ -105,9 +105,27 @@ app.use((req, res, next) => {
 });
 
 
-app.get('/posts/all',(req,res)=>{
+app.get('/posts/all/view', (req, res) => {
+    myDB.getAllPosts()
+        .then(data => {
+            let response = []; // Initialize as an array
+            data.forEach(element => {
+                const username = element.username;
+                const posts = element.posts;
+                response.push({
+                    username: username,
+                    posts: posts
+                });
+            });
+            res.json(response);
 
-})
+        })
+        .catch(e => {
+            console.log(e);
+            res.status(500).json({ message: 'Internal Server Error' });
+        });
+});
+
 
 
 app.listen(port, () => {

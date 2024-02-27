@@ -162,11 +162,20 @@ async function findPostsByUsername(username) {
         return posts;
     } catch (err) {
         console.error(err);
-        throw err; // Re-throw the error to be caught in the calling code
+        throw err; 
     }
 }
 
-
+async function getAllPosts() {
+    try {
+        const posts = await Posts.find({});
+        return posts;
+    } catch (err) {
+        console.error(err);
+        throw err; 
+    }
+}
 module.exports = {verifyPassword,
                     registerUser,
-                    findPostsByUsername}
+                    findPostsByUsername,
+                    getAllPosts};
