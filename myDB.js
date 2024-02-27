@@ -156,6 +156,17 @@ async function verifyPassword(user) {
     }
 }
 
+async function findPostsByUsername(username) {
+    try {
+        const posts = await Posts.find({ username: username });
+        return posts;
+    } catch (err) {
+        console.error(err);
+        throw err; // Re-throw the error to be caught in the calling code
+    }
+}
+
 
 module.exports = {verifyPassword,
-                    registerUser}
+                    registerUser,
+                    findPostsByUsername}

@@ -54,6 +54,7 @@ app.get( '/login', (req, res) => {
         });           
 })
 
+
 // API to register the user
 app.post('/register',(req,res)=>{
     const username= req.body.username
@@ -71,17 +72,38 @@ app.post('/register',(req,res)=>{
     } )
 })
 
-app.get('/posts/user',(req,res)=>{
-    //retunr the posts by the user
+app.use((req, res, next) => {
+    const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+    if (!token) {
+        
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+  
+    try {
+      const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+      req.userData = { userId: decodedToken.userId, username: decodedToken.username };
+      next();
+    } catch (error) {
+        console.log("here ",error)
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+  });
 
-})
 
+  app.get('/posts/:username', (req, res) => {
+    // Return the posts by the user
+    let username = req.params.username;
 
-app.put("/updateprofile",(req,res)=> {
-   let profile = req.body;
-   let token = req.headers['authorization'].split(" ")[1];
+    myDB.findPostsByUsername(username)
+        .then((posts) => {
+            res.json({posts:posts[0].posts}); // Corrected from res.json(data) to res.json(posts)
+        })
+        .catch((err) => {
+            console.error(err);
+            res.status(500).json({ message: 'Internal Server Error' });
+        });
+});
 
-})
 
 app.get('/posts/all',(req,res)=>{
 
